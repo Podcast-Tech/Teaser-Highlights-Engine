@@ -1,0 +1,5 @@
+{
+  "name": "Teaser & Highlights Engine",
+  "description": "An AI-powered podcast producer that analyzes transcripts to generate viral-ready teasers and social media reels.",
+  "requestFramePermissions": []
+}
