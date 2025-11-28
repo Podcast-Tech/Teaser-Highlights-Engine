@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mic, Sparkles, AlertCircle, FileText, Upload, Trash2, Captions, Copy, Check, MessageSquarePlus } from 'lucide-react';
+import { Mic, Sparkles, AlertCircle, FileText, Upload, Trash2, Captions, Copy, Check, MessageSquarePlus, Sun, Moon } from 'lucide-react';
 import { analyzeTranscript } from './services/geminiService';
 import { AnalysisResult, AnalysisStatus } from './types';
 import TeaserDisplay from './components/TeaserDisplay';
@@ -15,6 +15,7 @@ function App() {
   const [activeTab, setActiveTab] = useState<'teaser' | 'reels'>('teaser');
   const [isDragging, setIsDragging] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   const processFile = (file: File) => {
     if (!file.name.toLowerCase().endsWith('.srt')) {
@@ -119,39 +120,53 @@ function App() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+  };
+
+  const isDark = theme === 'dark';
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 pb-20">
+    <div className={`min-h-screen pb-20 transition-colors duration-300 ${isDark ? 'bg-slate-950 text-slate-200' : 'bg-gray-50 text-gray-800'}`}>
       {/* Header */}
-      <header className="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+      <header className={`sticky top-0 z-50 border-b transition-colors duration-300 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200 shadow-sm'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
              <img 
-               src="https://cdn.prod.website-files.com/67cae3a2f510ecb679236028/67cae3a2f510ecb679236301_poddster-logo.svg" 
+               src="https://dpc.org.ae/-/media/podcastssponser/podcastsponsor14/mediacast_logo_black/poddster-transparent.png?h=262&w=952&hash=624814403E551C5CBDFDFDB6B74227F7" 
                alt="Poddster" 
-               className="h-8 w-auto" 
+               className={`h-8 w-auto ${isDark ? 'brightness-0 invert' : ''}`}
              />
           </div>
+          
+          <button
+            onClick={toggleTheme}
+            className={`p-2 rounded-full transition-all duration-300 ${isDark ? 'bg-slate-800 text-yellow-400 hover:bg-slate-700' : 'bg-gray-100 text-slate-700 hover:bg-gray-200'}`}
+            title={`Switch to ${isDark ? 'Light' : 'Dark'} Mode`}
+          >
+            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Intro */}
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <h2 className="text-3xl font-bold text-white mb-3">Teaser & Highlights Engine</h2>
-          <p className="text-slate-400">
+          <h2 className={`text-3xl font-bold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>Teaser & Highlights Engine</h2>
+          <p className={`${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
             Upload your podcast SRT subtitle file. Our AI producer will identify the perfect 
             "Rollercoaster Teaser" structure and 5 viral-ready clips with exact timestamps.
           </p>
         </div>
 
         {/* Input Section */}
-        <div className="bg-slate-900 rounded-2xl border border-slate-800 shadow-xl overflow-hidden transition-all focus-within:ring-2 focus-within:ring-indigo-500/50">
-          <div className="p-4 border-b border-slate-800 bg-slate-800/50 flex justify-between items-center">
-            <div className="flex items-center gap-2 text-sm font-medium text-slate-300">
-              <Captions className="w-4 h-4 text-indigo-400" />
+        <div className={`rounded-2xl border shadow-xl overflow-hidden transition-all focus-within:ring-2 focus-within:ring-[#fe003e]/50 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'}`}>
+          <div className={`p-4 border-b flex justify-between items-center ${isDark ? 'border-slate-800 bg-slate-800/50' : 'border-gray-200 bg-gray-50'}`}>
+            <div className={`flex items-center gap-2 text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+              <Captions className={`w-4 h-4 ${isDark ? 'text-indigo-400' : 'text-[#fe003e]'}`} />
               <span>Transcript Input</span>
             </div>
-            <span className="text-xs text-slate-500 font-mono">.SRT Format Required</span>
+            <span className={`text-xs font-mono ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>.SRT Format Required</span>
           </div>
           
           <div className="p-6">
@@ -163,22 +178,27 @@ function App() {
                 className={`
                   flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-xl cursor-pointer transition-all group
                   ${isDragging 
-                    ? 'border-indigo-500 bg-indigo-500/10' 
-                    : 'border-slate-700 bg-slate-800/30 hover:bg-slate-800/50 hover:border-indigo-500/50'
+                    ? 'border-[#fe003e] bg-[#fe003e]/10' 
+                    : isDark 
+                      ? 'border-slate-700 bg-slate-800/30 hover:bg-slate-800/50 hover:border-[#fe003e]/50'
+                      : 'border-gray-300 bg-gray-50 hover:bg-gray-100 hover:border-[#fe003e]/50'
                   }
                 `}
               >
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                   <div className={`
                     p-4 rounded-full mb-4 transition-transform duration-300
-                    ${isDragging ? 'scale-110 bg-indigo-500/20' : 'bg-slate-800 group-hover:scale-110'}
+                    ${isDragging 
+                      ? 'scale-110 bg-[#fe003e]/20' 
+                      : isDark ? 'bg-slate-800 group-hover:scale-110' : 'bg-white shadow-sm group-hover:scale-110'
+                    }
                   `}>
-                    <Upload className={`w-8 h-8 ${isDragging ? 'text-indigo-400' : 'text-slate-400 group-hover:text-indigo-400'}`} />
+                    <Upload className={`w-8 h-8 ${isDragging ? 'text-[#fe003e]' : isDark ? 'text-slate-400 group-hover:text-[#fe003e]' : 'text-gray-400 group-hover:text-[#fe003e]'}`} />
                   </div>
-                  <p className="mb-2 text-sm text-slate-300">
-                    <span className="font-semibold text-indigo-400">Click to upload</span> or drag and drop
+                  <p className={`mb-2 text-sm ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                    <span className={`font-semibold ${isDark ? 'text-indigo-400' : 'text-[#fe003e]'}`}>Click to upload</span> or drag and drop
                   </p>
-                  <p className="text-xs text-slate-500">SRT files only</p>
+                  <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>SRT files only</p>
                 </div>
                 <input 
                   type="file" 
@@ -189,14 +209,14 @@ function App() {
               </label>
             ) : (
               <div className="space-y-4">
-                 <div className="flex items-center justify-between bg-indigo-950/30 border border-indigo-500/20 rounded-lg p-4">
+                 <div className={`flex items-center justify-between border rounded-lg p-4 ${isDark ? 'bg-indigo-950/30 border-indigo-500/20' : 'bg-[#fe003e]/5 border-[#fe003e]/20'}`}>
                     <div className="flex items-center gap-3">
-                      <div className="bg-indigo-500/20 p-2 rounded-lg">
-                        <Captions className="w-5 h-5 text-indigo-400" />
+                      <div className={`p-2 rounded-lg ${isDark ? 'bg-indigo-500/20' : 'bg-[#fe003e]/10'}`}>
+                        <Captions className={`w-5 h-5 ${isDark ? 'text-indigo-400' : 'text-[#fe003e]'}`} />
                       </div>
                       <div>
-                        <h3 className="text-sm font-semibold text-white">{fileName}</h3>
-                        <p className="text-xs text-slate-400">{transcript.length.toLocaleString()} characters</p>
+                        <h3 className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{fileName}</h3>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>{transcript.length.toLocaleString()} characters</p>
                       </div>
                     </div>
                     <button 
@@ -204,29 +224,33 @@ function App() {
                       className="p-2 hover:bg-red-500/10 rounded-lg group transition-colors"
                       title="Remove file"
                     >
-                      <Trash2 className="w-4 h-4 text-slate-500 group-hover:text-red-400" />
+                      <Trash2 className="w-4 h-4 text-slate-500 group-hover:text-red-500" />
                     </button>
                  </div>
                  
                  <div className="relative">
-                   <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-slate-950/50 to-transparent pointer-events-none rounded-t-lg" />
+                   <div className={`absolute top-0 left-0 right-0 h-4 bg-gradient-to-b pointer-events-none rounded-t-lg ${isDark ? 'from-slate-950/50' : 'from-gray-100/50'} to-transparent`} />
                    <textarea
-                      className="w-full h-48 bg-slate-950/50 p-4 rounded-lg text-xs font-mono text-slate-400 border border-slate-800 focus:outline-none resize-none"
+                      className={`w-full h-48 p-4 rounded-lg text-xs font-mono border focus:outline-none resize-none ${isDark ? 'bg-slate-950/50 text-slate-400 border-slate-800' : 'bg-gray-50 text-gray-600 border-gray-200'}`}
                       value={transcript}
                       readOnly
                       placeholder="Transcript preview..."
                     />
-                    <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-slate-950/50 to-transparent pointer-events-none rounded-b-lg" />
+                    <div className={`absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t pointer-events-none rounded-b-lg ${isDark ? 'from-slate-950/50' : 'from-gray-100/50'} to-transparent`} />
                  </div>
 
                  {/* Specific Instructions Input */}
-                 <div className="mt-4 pt-4 border-t border-slate-800">
-                    <div className="flex items-center gap-2 mb-2 text-sm font-medium text-slate-300">
-                        <MessageSquarePlus className="w-4 h-4 text-emerald-400" />
-                        Producer Notes / Specific Instructions <span className="text-slate-500 text-xs font-normal">(Optional)</span>
+                 <div className={`mt-4 pt-4 border-t ${isDark ? 'border-slate-800' : 'border-gray-200'}`}>
+                    <div className={`flex items-center gap-2 mb-2 text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                        <MessageSquarePlus className="w-4 h-4 text-emerald-500" />
+                        Producer Notes / Specific Instructions <span className={`text-xs font-normal ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>(Optional)</span>
                     </div>
                     <textarea
-                        className="w-full h-24 bg-slate-950 p-3 rounded-lg text-sm text-slate-200 border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none transition-all placeholder:text-slate-600"
+                        className={`w-full h-24 p-3 rounded-lg text-sm border focus:ring-1 focus:outline-none transition-all ${
+                          isDark 
+                            ? 'bg-slate-950 text-slate-200 border-slate-700 focus:border-indigo-500 focus:ring-indigo-500 placeholder:text-slate-600' 
+                            : 'bg-white text-gray-800 border-gray-300 focus:border-[#fe003e] focus:ring-[#fe003e] placeholder:text-gray-400'
+                        }`}
                         placeholder="e.g. Please include the story about the coffee shop incident in the teaser, or find a clip about 'productivity hacks'..."
                         value={userInstructions}
                         onChange={(e) => setUserInstructions(e.target.value)}
@@ -236,15 +260,15 @@ function App() {
             )}
           </div>
 
-          <div className="p-4 bg-slate-800/50 border-t border-slate-800 flex justify-end">
+          <div className={`p-4 border-t flex justify-end ${isDark ? 'bg-slate-800/50 border-slate-800' : 'bg-gray-50 border-gray-200'}`}>
             <button
               onClick={handleAnalyze}
               disabled={!transcript.trim() || status === AnalysisStatus.ANALYZING}
               className={`
                 flex items-center gap-2 px-6 py-3 rounded-lg font-bold text-sm transition-all
                 ${!transcript.trim() || status === AnalysisStatus.ANALYZING
-                  ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
-                  : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 hover:shadow-indigo-600/40 active:transform active:scale-95'}
+                  ? isDark ? 'bg-slate-700 text-slate-500 cursor-not-allowed' : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-[#fe003e] hover:bg-[#d60033] text-white shadow-lg shadow-[#fe003e]/25 hover:shadow-[#fe003e]/40 active:transform active:scale-95'}
               `}
             >
               {status === AnalysisStatus.ANALYZING ? (
@@ -264,8 +288,8 @@ function App() {
 
         {/* Error State */}
         {status === AnalysisStatus.ERROR && (
-          <div className="bg-red-950/20 border border-red-500/30 rounded-xl p-4 flex items-center gap-3 text-red-200">
-            <AlertCircle className="w-5 h-5 text-red-500" />
+          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-center gap-3 text-red-500">
+            <AlertCircle className="w-5 h-5" />
             <p>{error}</p>
           </div>
         )}
@@ -274,13 +298,13 @@ function App() {
         {result && status === AnalysisStatus.COMPLETE && (
           <div className="animate-fade-in-up">
             <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-              <div className="bg-slate-900 p-1 rounded-xl inline-flex border border-slate-800">
+              <div className={`p-1 rounded-xl inline-flex border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'}`}>
                 <button
                   onClick={() => setActiveTab('teaser')}
                   className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                     activeTab === 'teaser' 
-                      ? 'bg-indigo-600 text-white shadow-md' 
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                      ? 'bg-[#fe003e] text-white shadow-md' 
+                      : isDark ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >
                   Rollercoaster Teaser
@@ -289,8 +313,8 @@ function App() {
                   onClick={() => setActiveTab('reels')}
                   className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                     activeTab === 'reels' 
-                      ? 'bg-pink-600 text-white shadow-md' 
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                      ? 'bg-[#fe003e] text-white shadow-md' 
+                      : isDark ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >
                   Viral Reels (5)
@@ -302,8 +326,10 @@ function App() {
                 className={`
                   flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all
                   ${copied 
-                    ? 'bg-emerald-900/30 border-emerald-500/50 text-emerald-400' 
-                    : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white'
+                    ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-500' 
+                    : isDark 
+                      ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white'
+                      : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   }
                 `}
               >
@@ -314,14 +340,14 @@ function App() {
 
             <div className="transition-all duration-300">
               {activeTab === 'teaser' ? (
-                <TeaserDisplay segments={result.teaser} />
+                <TeaserDisplay segments={result.teaser} theme={theme} />
               ) : (
-                <ReelsDisplay reels={result.reels} />
+                <ReelsDisplay reels={result.reels} theme={theme} />
               )}
             </div>
             
             <div className="mt-8 text-center">
-                <p className="text-slate-600 text-xs">
+                <p className={`text-xs ${isDark ? 'text-slate-600' : 'text-gray-400'}`}>
                     *Timestamps are extracted directly from your SRT file.
                 </p>
             </div>
